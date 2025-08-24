@@ -1,0 +1,17 @@
+CREATE DATABASE chat_app;
+USE chat_app;
+
+CREATE TABLE users (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE messages (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  sender VARCHAR(50),
+  receiver VARCHAR(50),   -- for private; null for group
+  group_name VARCHAR(50), -- for group; null for private
+  content TEXT,
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

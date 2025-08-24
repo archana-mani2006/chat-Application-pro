@@ -1,0 +1,38 @@
+public class ClientHandler extends Thread {
+    private Socket socket;
+    private Set<ClientHandler> handlers;
+    private BufferedReader in;
+    private PrintWriter out;
+    private String username;
+
+    public ClientHandler(Socket socket, Set<ClientHandler> handlers) throws IOException {
+        this.socket = socket;
+        this.handlers = handlers;
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new PrintWriter(socket.getOutputStream(), true);
+    }
+
+    public void run() {
+        try {
+            // Handle user authentication here
+            out.println("Enter username:");
+            username = in.readLine();
+            // Password check omitted for brevity, add DB check here
+            out.println("Welcome " + username);
+
+            String line;
+            while ((line = in.readLine()) != null) {
+                // Broadcast message to all clients
+                for (ClientHandler handler : handlers) {
+                    if (handler != this)
+                        handler.out.println(username + ": " + line);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            handlers.remove(this);
+            try { socket.close(); } catch (IOException e) {}
+        }
+    }
+}
